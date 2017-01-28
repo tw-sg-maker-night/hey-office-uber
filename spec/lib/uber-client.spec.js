@@ -5,6 +5,10 @@ const nock = require('nock')
 const startLatitude = 1.290270
 const startLongitude = 103.851959
 const sampleResponseFile = __dirname + '/../../samples/responses/time-estimate.json'
+const location = {
+  startLatitude: startLatitude,
+  startLongitude: startLongitude
+}
 
 describe('get arrival time estimate for all services', () => {
   setupNockResponse = () => {
@@ -20,7 +24,7 @@ describe('get arrival time estimate for all services', () => {
   it('should return a list of uber services', (done) => {
     setupNockResponse()
 
-    uberClient.getArrivalTime(startLatitude, startLongitude).then(services => {
+    uberClient.getArrivalTime(location).then(services => {
       expect(Object.keys(services).length).to.eql(5)
       done()
     })
@@ -29,7 +33,7 @@ describe('get arrival time estimate for all services', () => {
   it('should return a map of services to arrival time estimates', (done) => {
     setupNockResponse()
 
-    uberClient.getArrivalTime(startLatitude, startLongitude).then(services => {
+    uberClient.getArrivalTime(location).then(services => {
       const serviceNames = ['uberPOOL', 'uberX', 'UberExec', 'ExecLarge', 'Taxi']
       const arrivalTimes = [360, 360, 300, 360, 300]
 
@@ -39,22 +43,6 @@ describe('get arrival time estimate for all services', () => {
       done()
     })
   })
-
-  it('should call with default start location if not provided', (done) => {
-    const defaultLongitude = 103.84714
-    const defaultLatitude = 1.28105
-    process.env.DEFAULT_LONGITUDE = defaultLongitude
-    process.env.DEFAULT_LATITUDE = defaultLatitude
-    nock('https://api.uber.com')
-      .get(`/v1.2/estimates/time?start_latitude=${defaultLatitude}&start_longitude=${defaultLongitude}`)
-      .replyWithFile(200, sampleResponseFile)
-
-    uberClient.getArrivalTime().then(services => {
-      expect(Object.keys(services).length).to.eql(5)
-      done()
-    })
-  })
-
 
   it('should return with error message if uber is unreachable', (done) => {
     nock('https://api.uber.com')
