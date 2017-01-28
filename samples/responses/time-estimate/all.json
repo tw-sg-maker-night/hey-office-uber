@@ -1,0 +1,34 @@
+{
+  "times": [
+    {
+      "localized_display_name": "uberPOOL",
+      "estimate": 360,
+      "display_name": "uberPOOL",
+      "product_id": "254b4950-0240-4105-8e66-b740cf1b812f"
+    },
+    {
+      "localized_display_name": "uberX",
+      "estimate": 360,
+      "display_name": "uberX",
+      "product_id": "56107787-ec17-479a-a316-07ab9e9d683b"
+    },
+    {
+      "localized_display_name": "UberExec",
+      "estimate": 300,
+      "display_name": "UberExec",
+      "product_id": "fd110c55-46d4-4c97-9bd9-6ec82aed1829"
+    },
+    {
+      "localized_display_name": "ExecLarge",
+      "estimate": 360,
+      "display_name": "ExecLarge",
+      "product_id": "ab9197bc-b5bc-48f8-9c4b-055d24e308be"
+    },
+    {
+      "localized_display_name": "Taxi",
+      "estimate": 300,
+      "display_name": "Taxi",
+      "product_id": "ef2fe289-c473-46e1-bf54-2e8d9ced668f"
+    }
+  ]
+}
