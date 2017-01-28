@@ -1,16 +1,34 @@
-'use strict';
+'use strict'
 
-module.exports.hello = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+const moment = require('moment')
+const uberClient = require('./lib/uber-client')
 
-  callback(null, response);
+const responseWithContent = (content) => {
+  return {
+    sessionAttributes: {},
+    dialogAction: {
+      type: 'Close',
+      fulfillmentState: 'Fulfilled',
+      message: {
+          contentType: 'PlainText',
+          content: content
+      }
+    }
+  }
+}
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+module.exports.arrivalTime = (event, context, callback) => {
+  const service = event.currentIntent.slots.UberService
+  const location = {
+    startLatitude: process.env.DEFAULT_LATITUDE,
+    startLongitude: process.env.DEFAULT_LONGITUDE
+  }
+  uberClient.getArrivalTime(location).then(arrivalTimes => {
+      const serviceArrivalTime = arrivalTimes[service]
+      const arrivalTimeMessage = moment.duration(serviceArrivalTime, 'seconds').humanize()
+
+      callback(null, responseWithContent(`The nearest ${service} is ${arrivalTimeMessage} away.`))
+    }).catch(err => {
+      callback(null, responseWithContent("Sorry I couldn't find the nearest Uber. Please try again later."))
+    })
+}
