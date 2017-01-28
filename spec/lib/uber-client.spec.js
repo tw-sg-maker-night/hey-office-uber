@@ -4,31 +4,38 @@ const nock = require('nock')
 
 const startLatitude = 1.290270
 const startLongitude = 103.851959
+const sampleResponseFile = __dirname + '/../../samples/responses/time-estimate.json'
 
 describe('get arrival time estimate for all services', () => {
   setupNockResponse = () => {
     nock('https://api.uber.com')
       .get(`/v1.2/estimates/time?start_latitude=${startLatitude}&start_longitude=${startLongitude}`)
-      .replyWithFile(200, __dirname + '/../../samples/responses/time-estimate/all.json')
+      .replyWithFile(200, sampleResponseFile)
   }
+
+  afterEach(() => {
+    nock.cleanAll()
+  })
 
   it('should return a list of uber services', (done) => {
     setupNockResponse()
 
     uberClient.getArrivalTime(startLatitude, startLongitude).then(services => {
-      expect(services.length).to.eql(5)
+      expect(Object.keys(services).length).to.eql(5)
       done()
     })
   })
 
-  it('should return the service names and arrival time estimates', (done) => {
+  it('should return a map of services to arrival time estimates', (done) => {
     setupNockResponse()
 
     uberClient.getArrivalTime(startLatitude, startLongitude).then(services => {
-      const serviceNames = services.map(service => service.name)
-      const arrivalTimes = services.map(service => service.arrivalTime)
-      expect(serviceNames).to.eql(['uberPOOL', 'uberX', 'UberExec', 'ExecLarge', 'Taxi'])
-      expect(arrivalTimes).to.eql([360, 360, 300, 360, 300])
+      const serviceNames = ['uberPOOL', 'uberX', 'UberExec', 'ExecLarge', 'Taxi']
+      const arrivalTimes = [360, 360, 300, 360, 300]
+
+      serviceNames.forEach((serviceName, index) => {
+        expect(services[serviceName]).to.eql(arrivalTimes[index])
+      })
       done()
     })
   })
@@ -40,10 +47,10 @@ describe('get arrival time estimate for all services', () => {
     process.env.DEFAULT_LATITUDE = defaultLatitude
     nock('https://api.uber.com')
       .get(`/v1.2/estimates/time?start_latitude=${defaultLatitude}&start_longitude=${defaultLongitude}`)
-      .replyWithFile(200, __dirname + '/../../samples/responses/time-estimate/all.json')
+      .replyWithFile(200, sampleResponseFile)
 
     uberClient.getArrivalTime().then(services => {
-      expect(services.length).to.eql(5)
+      expect(Object.keys(services).length).to.eql(5)
       done()
     })
   })
