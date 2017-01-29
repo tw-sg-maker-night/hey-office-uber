@@ -29,7 +29,7 @@ include:
   - lib/**
 
 functions:
-  hello:
+  arrivalTime:
     handler: handler.arrivalTime
 
 #    The following are a few example events you can configure
