@@ -15,12 +15,25 @@ describe('request arrival times of uber services', () => {
     nock.cleanAll()
   })
 
-  it('should return how many minutes for Uber service to arrive', (done) => {
+  const setupNockSuccessResponse = () => {
     nock('https://api.uber.com')
       .get(`/v1.2/estimates/time?start_latitude=${startLatitude}&start_longitude=${startLongitude}`)
       .reply(200, mockUberResponse(360))
+  }
 
+  it('should return how many minutes for Uber service to arrive', (done) => {
+    setupNockSuccessResponse()
     const event = request({ UberService: 'uberX' })
+
+    handler.arrivalTime(event, {}, (err, response) => {
+      expect(response.dialogAction.message.content).to.eql("The nearest uberX is 6 minutes away.")
+      done()
+    })
+  })
+
+  it('should get arrival time of uberX if no service is specified', (done) => {
+    setupNockSuccessResponse()
+    const event = request({ UberService: '' })
 
     handler.arrivalTime(event, {}, (err, response) => {
       expect(response.dialogAction.message.content).to.eql("The nearest uberX is 6 minutes away.")

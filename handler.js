@@ -18,7 +18,7 @@ const responseWithContent = (content) => {
 }
 
 module.exports.arrivalTime = (event, context, callback) => {
-  const service = event.currentIntent.slots.UberService
+  const service = event.currentIntent.slots.UberService || 'uberX'
   const location = {
     startLatitude: process.env.DEFAULT_LATITUDE,
     startLongitude: process.env.DEFAULT_LONGITUDE

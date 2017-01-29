@@ -11,7 +11,7 @@ const location = {
 }
 
 describe('get arrival time estimate for all services', () => {
-  setupNockResponse = () => {
+  const setupNockSuccessResponse = () => {
     nock('https://api.uber.com')
       .get(`/v1.2/estimates/time?start_latitude=${startLatitude}&start_longitude=${startLongitude}`)
       .replyWithFile(200, sampleResponseFile)
@@ -22,7 +22,7 @@ describe('get arrival time estimate for all services', () => {
   })
 
   it('should return a list of uber services', (done) => {
-    setupNockResponse()
+    setupNockSuccessResponse()
 
     uberClient.getArrivalTime(location).then(services => {
       expect(Object.keys(services).length).to.eql(5)
@@ -31,7 +31,7 @@ describe('get arrival time estimate for all services', () => {
   })
 
   it('should return a map of services to arrival time estimates', (done) => {
-    setupNockResponse()
+    setupNockSuccessResponse()
 
     uberClient.getArrivalTime(location).then(services => {
       const serviceNames = ['uberPOOL', 'uberX', 'UberExec', 'ExecLarge', 'Taxi']
