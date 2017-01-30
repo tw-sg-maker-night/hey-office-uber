@@ -2,6 +2,7 @@
 
 const moment = require('moment')
 const uberClient = require('./lib/uber-client')
+const serviceNames = require('./lib/serviceNames')
 
 const responseWithContent = (content) => {
   return {
@@ -18,17 +19,24 @@ const responseWithContent = (content) => {
 }
 
 module.exports.arrivalTime = (event, context, callback) => {
-  const service = event.currentIntent.slots.UberService || 'uberX'
+  const serviceRequest = event.currentIntent.slots.UberService || 'uberx'
+  const service = serviceNames[serviceRequest.toLowerCase()]
+
   const location = {
     startLatitude: process.env.DEFAULT_LATITUDE,
     startLongitude: process.env.DEFAULT_LONGITUDE
   }
-  uberClient.getArrivalTime(location).then(arrivalTimes => {
-      const serviceArrivalTime = arrivalTimes[service]
-      const arrivalTimeMessage = moment.duration(serviceArrivalTime, 'seconds').humanize()
 
-      callback(null, responseWithContent(`The nearest ${service} is ${arrivalTimeMessage} away.`))
-    }).catch(err => {
-      callback(null, responseWithContent("Sorry I couldn't find the nearest Uber. Please try again later."))
-    })
+  if (service === undefined) {
+    return callback(null, responseWithContent(`Sorry I couldn't find the service ${serviceRequest}.`))
+  }
+
+  uberClient.getArrivalTime(location).then(arrivalTimes => {
+    const serviceArrivalTime = arrivalTimes[service]
+    const arrivalTimeMessage = moment.duration(serviceArrivalTime, 'seconds').humanize()
+
+    return callback(null, responseWithContent(`The nearest ${service} is ${arrivalTimeMessage} away.`))
+  }).catch(err => {
+    return callback(null, responseWithContent("Sorry I couldn't find the nearest Uber. Please try again later."))
+  })
 }

@@ -41,6 +41,26 @@ describe('request arrival times of uber services', () => {
     })
   })
 
+  it('should map service name to the correct uber format', (done) => {
+    setupNockSuccessResponse()
+    const event = request({ UberService: 'uberx' })
+
+    handler.arrivalTime(event, {}, (err, response) => {
+      expect(response.dialogAction.message.content).to.eql("The nearest uberX is 6 minutes away.")
+      done()
+    })
+  })
+
+  it('should return error message if service is not recognised', (done) => {
+    setupNockSuccessResponse()
+    const event = request({ UberService: 'abc' })
+
+    handler.arrivalTime(event, {}, (err, response) => {
+      expect(response.dialogAction.message.content).to.eql("Sorry I couldn't find the service abc.")
+      done()
+    })
+  })
+
   it('should return error message if cannot reach Uber', (done) => {
     nock('https://api.uber.com')
       .get(`/v1.2/estimates/time?start_latitude=${startLatitude}&start_longitude=${startLongitude}`)
