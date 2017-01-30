@@ -49,7 +49,7 @@ describe('get arrival time estimate for all services', () => {
       .get(`/v1.2/estimates/time?start_latitude=${startLatitude}&start_longitude=${startLongitude}`)
       .replyWithError(500)
 
-    uberClient.getArrivalTime(startLatitude, startLongitude)
+    uberClient.getArrivalTime(location)
       .catch(err => {
         expect(err).to.eql('HTTP Call to Uber failed')
         done()
