@@ -23,8 +23,8 @@ module.exports.arrivalTime = (event, context, callback) => {
   const service = serviceNames[serviceRequest.toLowerCase()]
 
   const location = {
-    startLatitude: process.env.DEFAULT_LATITUDE,
-    startLongitude: process.env.DEFAULT_LONGITUDE
+    latitude: process.env.DEFAULT_LATITUDE,
+    longitude: process.env.DEFAULT_LONGITUDE
   }
 
   if (service === undefined) {
